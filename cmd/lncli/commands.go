@@ -2801,3 +2801,23 @@ func forwardingHistory(ctx *cli.Context) error {
 	printRespJSON(resp)
 	return nil
 }
+
+var importOpenChannelMsgCommand = cli.Command{
+	Name:   "import_open_channel_msg",
+	Action: actionDecorator(importOpenChannelMsg),
+}
+
+func importOpenChannelMsg(ctx *cli.Context) error {
+	ctxb := context.Background()
+	client, cleanUp := getClient(ctx)
+	defer cleanUp()
+
+	req := &lnrpc.ImportOpenChannelMsgRequest{}
+	resp, err := client.ImportOpenChannelMsg(ctxb, req)
+	if err != nil {
+		return err
+	}
+
+	printRespJSON(resp)
+	return nil
+}

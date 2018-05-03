@@ -549,6 +549,8 @@ service Lightning {
             body: "*"
         };
     };
+
+    rpc ImportOpenChannelMsg(ImportOpenChannelMsgRequest) returns (ImportOpenChannelMsgResponse) {};
 }
 
 message Transaction {
@@ -1609,3 +1611,9 @@ message ForwardingHistoryResponse {
    /// The index of the last time in the set of returned forwarding events. Can be used to seek further, pagination style.
    uint32 last_offset_index = 2 [json_name = "last_offset_index"];
 }
+
+message ImportOpenChannelMsgRequest {
+    bytes encoded_msg = 1 [json_name = "encoded_msg"];
+}
+
+message ImportOpenChannelMsgResponse {}

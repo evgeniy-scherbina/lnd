@@ -228,6 +228,7 @@ func main() {
 		feeReportCommand,
 		updateChannelPolicyCommand,
 		forwardingHistoryCommand,
+		importOpenChannelMsgCommand,
 	}
 
 	if err := app.Run(os.Args); err != nil {

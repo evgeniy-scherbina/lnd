@@ -845,6 +845,7 @@ func (f *fundingManager) reservationCoordinator() {
 				go f.handleFundingLocked(fmsg)
 			case *fundingErrorMsg:
 				f.handleErrorMsg(fmsg)
+			default: panic("default was called")
 			}
 		case req := <-f.fundingRequests:
 			f.handleInitFundingMsg(req)

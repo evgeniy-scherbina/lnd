@@ -1515,6 +1515,9 @@
         }
       }
     },
+    "lnrpcImportOpenChannelMsgResponse": {
+      "type": "object"
+    },
     "lnrpcInitWalletRequest": {
       "type": "object",
       "properties": {

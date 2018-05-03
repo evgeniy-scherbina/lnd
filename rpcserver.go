@@ -36,6 +36,7 @@ import (
 	"github.com/roasbeef/btcwallet/waddrmgr"
 	"github.com/tv42/zbase32"
 	"golang.org/x/net/context"
+	"os"
 )
 
 var (
@@ -3467,4 +3468,57 @@ func (r *rpcServer) ForwardingHistory(ctx context.Context,
 	}
 
 	return resp, nil
+}
+
+// TODO(evg): use RPC instead of local filesystem
+func (r *rpcServer) ImportOpenChannelMsg(ctx context.Context,
+	req *lnrpc.ImportOpenChannelMsgRequest) (*lnrpc.ImportOpenChannelMsgResponse, error) {
+
+	dumpFilename := "/tmp/lnd/open_channel_msg"
+	dumpFile, err := os.Open(dumpFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	openChannelMsg := lnwire.OpenChannel{}
+	if err := openChannelMsg.Decode(dumpFile, 0); err != nil {
+		return nil, err
+	}
+
+	dumpFilename = "/tmp/lnd/imported_open_channel_msg"
+	dumpFile, err = os.Create(dumpFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := dumpFile.Write([]byte(fmt.Sprintln(openChannelMsg))); err != nil {
+		return nil, err
+	}
+
+	pubKeyBytes, err := hex.DecodeString("02ff1534ab894e8602a9bcc38ec7c7d2e054b6b947784435fa0f773f7a52ca56f0")
+	if err != nil {
+		return nil, err
+	}
+
+	identityKey, err := btcec.ParsePubKey(pubKeyBytes, btcec.S256())
+	if err != nil {
+		return nil, err
+	}
+
+	netAddress := lnwire.NetAddress{
+		IdentityKey: identityKey,
+		Address: &net.IPAddr{
+			IP: net.IPv4(192, 168, 0, 1),
+		},
+	}
+
+
+	fundingOpen := &fundingOpenMsg{
+		msg: &openChannelMsg,
+		peerAddress: &netAddress,
+	}
+
+	r.server.fundingMgr.fundingMsgs <- fundingOpen
+
+	return &lnrpc.ImportOpenChannelMsgResponse{}, nil
 }
