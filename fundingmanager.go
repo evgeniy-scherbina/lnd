@@ -27,6 +27,7 @@ import (
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
 	"github.com/roasbeef/btcd/wire"
 	"github.com/roasbeef/btcutil"
+	"os"
 )
 
 const (
@@ -2614,6 +2615,57 @@ func (f *fundingManager) handleInitFundingMsg(msg *initFundingMsg) {
 		FirstCommitmentPoint: ourContribution.FirstCommitmentPoint,
 		ChannelFlags:         channelFlags,
 	}
+
+	if msg.dumpMessage {
+		/*
+		openChannelDesc := func(msg *lnwire.OpenChannel) string {
+			tmpl := `
+			ChainHash:            %v,
+			PendingChannelID:     %v,
+			FundingAmount:        %v,
+			PushAmount:           %v,
+			DustLimit:            %v,
+			MaxValueInFlight:     %v,
+			ChannelReserve:       %v,
+			HtlcMinimum:          %v,
+			FeePerKiloWeight:     %v,
+			CsvDelay:             %v,
+			MaxAcceptedHTLCs:     %v,
+			FundingKey:           %v,
+			RevocationPoint:      %v,
+			PaymentPoint:         %v,
+			HtlcPoint:            %v,
+			DelayedPaymentPoint:  %v,
+			FirstCommitmentPoint: %v,
+			ChannelFlags:         %v,
+			`
+
+			return fmt.Sprintf(tmpl, msg.ChainHash, msg.PendingChannelID, msg.FundingAmount, msg.PushAmount, msg.DustLimit,
+				msg.MaxValueInFlight, msg.ChannelReserve, msg.HtlcMinimum, msg.FeePerKiloWeight, msg.CsvDelay,
+				msg.MaxAcceptedHTLCs, msg.FundingKey, msg.RevocationPoint, msg.PaymentPoint, msg.HtlcPoint,
+				msg.DelayedPaymentPoint, msg.FirstCommitmentPoint, msg.ChannelFlags)
+		}
+
+		logFilename := "/tmp/lnd_debug.log"
+		logMessage := []byte(openChannelDesc(&fundingOpen))
+		if err := ioutil.WriteFile(logFilename, logMessage, 0644); err != nil {
+			panic(err)
+		}
+		return
+		*/
+
+		dumpFilename := "/tmp/lnd/open_channel_msg"
+		dumpFile, err := os.Create(dumpFilename)
+		if err != nil {
+			panic(err)
+		}
+
+		if err := fundingOpen.Encode(dumpFile, 0); err != nil {
+			panic(err)
+		}
+		return
+	}
+
 	if err := f.cfg.SendToPeer(peerKey, &fundingOpen); err != nil {
 		e := fmt.Errorf("Unable to send funding request message: %v",
 			err)

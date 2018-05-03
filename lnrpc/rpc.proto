@@ -990,6 +990,8 @@ message OpenChannelRequest {
 
     /// The delay we require on the remote's commitment transaction. If this is not set, it will be scaled automatically with the channel size.
     uint32 remote_csv_delay = 10 [json_name = "remote_csv_delay"];
+
+    bool dump_message = 11 [json_name = "dump_message"];
 }
 message OpenStatusUpdate {
     oneof update {

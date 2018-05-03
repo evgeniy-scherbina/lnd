@@ -446,6 +446,9 @@ var openChannelCommand = cli.Command{
 				"not set, we will scale the value according to the " +
 				"channel size",
 		},
+		cli.BoolFlag{
+			Name: "dump_message",
+		},
 	},
 	Action: actionDecorator(openChannel),
 }
@@ -470,6 +473,7 @@ func openChannel(ctx *cli.Context) error {
 		SatPerByte:     ctx.Int64("sat_per_byte"),
 		MinHtlcMsat:    ctx.Int64("min_htlc_msat"),
 		RemoteCsvDelay: uint32(ctx.Uint64("remote_csv_delay")),
+		DumpMessage:    ctx.Bool("dump_message"),
 	}
 
 	switch {

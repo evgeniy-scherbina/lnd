@@ -1751,6 +1751,8 @@ type openChanReq struct {
 
 	// TODO(roasbeef): add ability to specify channel constraints as well
 
+	dumpMessage bool
+
 	updates chan *lnrpc.OpenStatusUpdate
 	err     chan error
 }
@@ -1873,7 +1875,7 @@ func (s *server) DisconnectPeer(pubKey *btcec.PublicKey) error {
 func (s *server) OpenChannel(nodeKey *btcec.PublicKey,
 	localAmt btcutil.Amount, pushAmt, minHtlc lnwire.MilliSatoshi,
 	fundingFeePerVSize lnwallet.SatPerVByte, private bool,
-	remoteCsvDelay uint16) (chan *lnrpc.OpenStatusUpdate, chan error) {
+	remoteCsvDelay uint16, dumpMessage bool) (chan *lnrpc.OpenStatusUpdate, chan error) {
 
 	updateChan := make(chan *lnrpc.OpenStatusUpdate, 1)
 	errChan := make(chan error, 1)
@@ -1928,6 +1930,7 @@ func (s *server) OpenChannel(nodeKey *btcec.PublicKey,
 		private:            private,
 		minHtlc:            minHtlc,
 		remoteCsvDelay:     remoteCsvDelay,
+		dumpMessage:        dumpMessage,
 		updates:            updateChan,
 		err:                errChan,
 	}
